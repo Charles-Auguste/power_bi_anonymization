@@ -1,0 +1,39 @@
+import os
+from pathlib import Path
+
+HERE = Path(__file__)
+
+SECRET_KEY = os.environ["SECRET_KEY"]
+
+# Data Path
+DATA_PATH = Path(os.environ["DATA_PATH"])
+UPLOAD_FOLDER = DATA_PATH / "upload"
+SAMPLE_FOLDER = DATA_PATH / "sample"
+
+# Connection
+APIHOST = os.environ["APIHOST"]
+WEBHOST = os.environ["WEBHOST"]
+RABBIT_URL = os.environ["RABBIT_URL"]
+MONGODB_HOST = os.environ["MONGODB_HOST"]
+MONGODB_USER = os.environ["MONGODB_USER"]
+MONGODB_PASSWORD = os.environ["MONGODB_PASSWORD"]
+MONGODB_PORT = int(os.environ["MONGODB_PORT"])
+MONGODB_DB_NAME = os.environ["MONGODB_DB_NAME"]
+MONGO_AUTH = f"{MONGODB_USER}:{MONGODB_PASSWORD}@" if MONGODB_USER else ""
+MONGO_URL = os.environ.get("MONGODB_URI") or (
+    f"mongodb://" f"{MONGO_AUTH}{MONGODB_HOST}:{MONGODB_PORT}/{MONGODB_DB_NAME}"
+)
+MONGODB_SETTINGS = {"db": MONGODB_DB_NAME, "alias": "default"}
+CELERY_TIMEZONE = os.environ["CELERY_TIMEZONE"]
+SENTRY_ENV = os.environ["SENTRY_ENV"]
+SENTRY_DSN = os.environ["SENTRY_DSN"]
+MZ_OAUTH_REDIRECT_URI = os.environ["MZ_OAUTH_REDIRECT_URI"]
+MZ_OAUTH_CLIENT_ID = os.environ["MZ_OAUTH_CLIENT_ID"]
+MZ_OAUTH_CLIENT_SECRET = os.environ["MZ_OAUTH_CLIENT_SECRET"]
+MZ_OAUTH_AUTHORIZE_ENDPOINT = os.environ["MZ_OAUTH_AUTHORIZE_ENDPOINT"]
+MZ_OAUTH_ACCESS_TOKEN_ENDPOINT = os.environ["MZ_OAUTH_ACCESS_TOKEN_ENDPOINT"]
+
+
+# External links
+SENTRY_URL = os.getenv("SENTRY_URL")
+FLOWER_URL = os.getenv("FLOWER_URL")

@@ -1,0 +1,67 @@
+image: code-registry.mazars.global/infra/zf_docker_images/debian-11-builder:3.9
+
+variables:
+  PIPYRC_CONFIG_FILE: $CI_PROJECT_DIR/ci/.pypirc
+  PIP_CONFIG_FILE: $CI_PROJECT_DIR/ci/pip.conf
+  DEPLOY_IMAGE: code-registry.mazars.global/infra/zf_docker_images/ansible:bullseye-2.2.0
+  RABBITMQ_IMAGE: code-registry.mazars.global/infra/zf_docker_images/rabbitmq:3-management
+  MONGODB_IMAGE: code-registry.mazars.global/mz/aaa/mongo:4.2.10-bionic
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+include: '**/gitlab-ci.yml'
+
+stages:
+  - Tests
+  - CI Templating
+  - Continuous Deployment
+
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
+    - when: always
+
+Generate CD:
+  needs: []
+  stage: CI Templating
+  image: $DEPLOY_IMAGE
+  artifacts:
+    paths:
+      - ci/cd.yml
+    reports:
+      dotenv: build.env
+    expire_in: 10 mins
+  script:
+    - >
+      ls ansible/serverlist/ | while read line;
+        do
+          for app in "api" "pkg" "web" "doc"
+          do
+            if [ -d "$app" ]; then
+              ansible localhost -m template -i ansible/serverlist/$line -a "src=$app/ci/gitlab-ci.j2 dest=ci/${line}_${app}";
+            fi
+          done
+          ansible localhost -m template -i ansible/serverlist/$line -a "src=ci/vars.j2 dest=ci/${line}_vars.yml";
+        done;
+    - cat ci/base_cd.yml >> ci/cd.yml
+    - cat ci/serverlist* >> ci/cd.yml
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
+    - if: '$CI_COMMIT_REF_NAME =~ /dev/'
+    - if: '$CI_COMMIT_REF_NAME =~ /master/'
+    - if: '$CI_COMMIT_TAG =~ /([0-9]+(\.[0-9]+)+)/'
+
+Deployment:
+  trigger:
+    include:
+      - artifact: 'ci/cd.yml'
+        job: Generate CD
+    strategy: depend
+  stage: Continuous Deployment
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
+    - if: '$CI_COMMIT_REF_NAME =~ /dev/'
+    - if: '$CI_COMMIT_REF_NAME =~ /master/'
+    - if: '$CI_COMMIT_TAG =~ /([0-9]+(\.[0-9]+)+)/'

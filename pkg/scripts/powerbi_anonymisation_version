@@ -1,0 +1,6 @@
+#!/usr/bin/env python
+import powerbi_anonymisation_pkg
+
+if __name__ == "__main__":
+    print("\npowerbi_anonymisation version:")
+    print(f"{powerbi_anonymisation_pkg.__version__}\n")
