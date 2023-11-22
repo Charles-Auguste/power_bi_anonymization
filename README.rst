@@ -1,20 +1,10 @@
 powerbi_anonymisation
 ====================================
 
-Coverage
---------
-.. image:: https://code.mazars.global/mz/powerbi_anonymisation/badges/dev/pipeline.svg?key_text=Pipeline
-.. image:: https://code.mazars.global/mz/powerbi_anonymisation/badges/dev/coverage.svg?job=Unit%20Tests%20API&key_text=API%20Cov
-.. image:: https://code.mazars.global/mz/powerbi_anonymisation/badges/dev/coverage.svg?job=Unit%20Tests%20PKG&key_text=PKG%20Cov
-
 
 Project Setup
 -------------
 Let's clone this project to your PC --> Use the "Clone with SSH" key that you can find under the blue button "Clone"
-
-.. code:: python
-
-    git clone git@code.mazars.global:2023/powerbi-anonymisation.git
 
 
 Create your virtual environment, if you don't have one yet. Let's name it ``anonymisation``:
